@@ -218,6 +218,13 @@ def add_pipeline_model_mapping(test_class, overwrite=False):
     return line_to_add
 
 
+def add_pipeline_model_mapping_to_test_file(test_file, overwrite=False):
+    """Add `pipeline_model_mapping` to `test_file`."""
+    test_class = find_test_class(test_file)
+    if test_class:
+        add_pipeline_model_mapping(test_class, overwrite=overwrite)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -251,6 +258,4 @@ if __name__ == "__main__":
                 test_files.append(test_file)
 
     for test_file in test_files:
-        test_class = find_test_class(test_file)
-        if test_class:
-            add_pipeline_model_mapping(test_class, overwrite=args.overwrite)
+        add_pipeline_model_mapping_to_test_file(test_file, overwrite=args.overwrite)
