@@ -66,7 +66,7 @@ def get_model_for_pipeline_test(test_class, task):
     if mapping is None:
         return None
 
-    config_classes = {model_class.config_class for model_class in test_class.all_model_classes}
+    config_classes = list({model_class.config_class for model_class in test_class.all_model_classes})
     if len(config_classes) != 1:
         raise ValueError("There should be exactly one configuration class from `test_class.all_model_classes`.")
 
