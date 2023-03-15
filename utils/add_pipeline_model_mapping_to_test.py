@@ -21,11 +21,17 @@ import os
 import sys
 import unittest
 
+
 # This is required to make the module import works (when the python process is running from the root of the repo)
 sys.path.append(".")
 
-from get_test_info import get_test_classes
-from tests.test_pipeline_mixin import pipeline_test_mapping
+from get_test_info import get_test_classes  # noqa E402
+from tests.test_pipeline_mixin import pipeline_test_mapping  # noqa E402
+
+
+PIPELINE_TEST_MAPPING = {}
+for task, _ in pipeline_test_mapping.items():
+    PIPELINE_TEST_MAPPING[task] = {"pt": None, "tf": None}
 
 
 def get_framework(test_class):
@@ -43,6 +49,10 @@ def get_framework(test_class):
 
 def get_mapping_for_task(task, framework):
     """Get mappings defined in `XXXPipelineTests` for the task `task`."""
+    # Use the cached results
+    if PIPELINE_TEST_MAPPING[task][framework] is not None:
+        return PIPELINE_TEST_MAPPING[task][framework]
+
     pipeline_test_class = pipeline_test_mapping[task]["test"]
     mapping = None
 
@@ -54,6 +64,8 @@ def get_mapping_for_task(task, framework):
     if mapping is not None:
         mapping = {k: v for k, v in mapping.items()}
 
+    # cache the results
+    PIPELINE_TEST_MAPPING[task][framework] = mapping
     return mapping
 
 
@@ -176,7 +188,7 @@ def add_pipeline_model_mapping(test_class, overwrite=False):
     # Remove existing `pipeline_model_mapping`
     if def_line is not None:
         # `target_idx + 1` is the index for the line defining `target_idx + 1`
-        for idx, line in enumerate(class_lines[target_idx + 1:]):
+        for idx, line in enumerate(class_lines[target_idx + 1 :]):
             indent = len(line) - len(line.lstrip())
             if idx == 0 or indent > target_indent or (indent == target_indent and line.strip() == ")"):
                 # These lines are going to be removed before writing to the test file.
@@ -189,7 +201,7 @@ def add_pipeline_model_mapping(test_class, overwrite=False):
     line_to_add = " " * target_indent + line_to_add
     # Insert `pipeline_model_mapping` to `class_lines`
     # (The line at `target_idx` should be kept by definition!)
-    class_lines = class_lines[: target_idx + 1] + [line_to_add] + class_lines[target_idx + 1:]
+    class_lines = class_lines[: target_idx + 1] + [line_to_add] + class_lines[target_idx + 1 :]
     # Remove the lines that are marked to be removed
     class_lines = [x for x in class_lines if x is not None]
 
