@@ -12,6 +12,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""A script to add and/or update the attribute `pipeline_model_mapping` in model test files.
+
+This script will be (mostly) used in the following 2 situations:
+
+  - run within a (scheduled) CI job to:
+    - check if model test files in the library have updated `pipeline_model_mapping`,
+    - and/or update test files and (possibly) open a GitHub pull request automatically
+  - being run by a `transformers` member to quickly check and update some particular test file(s)
+
+This script is **NOT** intended to be run (manually) by community contributors.
+"""
 
 
 import argparse
