@@ -73,7 +73,7 @@ def get_mapping_for_task(task, framework):
         mapping = getattr(pipeline_test_class, "tf_model_mapping", None)
 
     if mapping is not None:
-        mapping = {k: v for k, v in mapping.items()}
+        mapping = dict(mapping.items())
 
     # cache the results
     PIPELINE_TEST_MAPPING[task][framework] = mapping
