@@ -5,6 +5,7 @@ on:
     branches:
       - run_nightly_ci*
       - run_past_ci*
+      - run_nightly_past_ci*
 
 jobs:
   build_nightly_ci_images:
