@@ -63,6 +63,7 @@ class SummarizationPipelineTests(unittest.TestCase):
             "FSMTConfig",
             "M2M100Config",
             "ProphetNetConfig",  # positional embeddings up to a fixed maximum size (otherwise clamping the values)
+            "NllbMoeConfig",
         ]
         if model.config.__class__.__name__ not in model_can_handle_longer_seq:
             # Too long and exception is expected.
