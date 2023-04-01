@@ -416,7 +416,20 @@ def create_reverse_dependency_map():
     cache = {}
     all_modules = list(PATH_TO_TRANFORMERS.glob("**/*.py")) + list(PATH_TO_TESTS.glob("**/*.py"))
     all_modules = [str(mod.relative_to(PATH_TO_REPO)) for mod in all_modules]
+    import datetime
+    import pdb; pdb.set_trace()
+    s = datetime.datetime.now()
+    print(s)
     direct_deps = {m: get_module_dependencies(m, cache=cache) for m in all_modules}
+    e = datetime.datetime.now()
+    print(e)
+    d = (e-s).total_seconds()
+    print(d)
+    import pdb; pdb.set_trace()
+
+    import datetime
+    import pdb; pdb.set_trace()
+    s = datetime.datetime.now()
 
     # This recurses the dependencies
     something_changed = True
@@ -433,11 +446,27 @@ def create_reverse_dependency_map():
                     direct_deps[m].extend(list(new_deps))
                     something_changed = True
 
+    e = datetime.datetime.now()
+    print(e)
+    d = (e-s).total_seconds()
+    print(d)
+    import pdb; pdb.set_trace()
+
+    import datetime
+    import pdb; pdb.set_trace()
+    s = datetime.datetime.now()
+
     # Finally we can build the reverse map.
     reverse_map = collections.defaultdict(list)
     for m in all_modules:
         for d in direct_deps[m]:
             reverse_map[d].append(m)
+
+    e = datetime.datetime.now()
+    print(e)
+    d = (e-s).total_seconds()
+    print(d)
+    import pdb; pdb.set_trace()
 
     for m in [f for f in all_modules if f.endswith("__init__.py")]:
         direct_deps = get_module_dependencies(m, cache=cache)
