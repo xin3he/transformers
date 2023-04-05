@@ -121,8 +121,14 @@ def get_pipeline_model_mapping_string(test_class):
         return ""
 
     texts = []
-    for k, v in mapping.items():
-        texts.append(f'"{k}": {v.__name__}')
+    for task, model_classes in mapping.items():
+        if isinstance(model_classes, (tuple, list)):
+            # A list/tuple of model classes
+            value = "(" + ", ".join([x.__name__ for x in model_classes]) + ")"
+        else:
+            # A single model class
+            value = model_classes.__name__
+        texts.append(f'"{task}": {value}')
     text = "{" + ", ".join(texts) + "}"
     text = f"pipeline_model_mapping = {text} if is_{framework}_available() else {default_value}"
 
