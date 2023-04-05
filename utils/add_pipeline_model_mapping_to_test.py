@@ -156,7 +156,7 @@ def find_test_class(test_file):
 
 def add_pipeline_model_mapping(test_class, overwrite=False):
     """Add `pipeline_model_mapping` to `test_class`."""
-    if getattr(test_class, "pipeline_model_mapping") is not None:
+    if getattr(test_class, "pipeline_model_mapping", None) is not None:
         if not overwrite:
             return "", -1
 
