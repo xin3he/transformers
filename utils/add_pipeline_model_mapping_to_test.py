@@ -160,6 +160,19 @@ def find_test_class(test_file):
     return target_test_class
 
 
+def find_block_ending(lines, start_idx, indent_level):
+    end_idx = start_idx
+    for idx, line in enumerate(lines[start_idx:]):
+        indent = len(line) - len(line.lstrip())
+        if idx == 0 or indent > indent_level or (indent == indent_level and line.strip() == ")"):
+            end_idx = start_idx + idx
+        elif idx > 0 and indent <= indent_level:
+            # Outside the definition block of `pipeline_model_mapping`
+            break
+
+    return end_idx
+
+
 def add_pipeline_model_mapping(test_class, overwrite=False):
     """Add `pipeline_model_mapping` to `test_class`."""
     if getattr(test_class, "pipeline_model_mapping", None) is not None:
@@ -182,40 +195,41 @@ def add_pipeline_model_mapping(test_class, overwrite=False):
     class_start_line_no += idx
     class_end_line_no = class_start_line_no + len(class_lines) - 1
 
-    target_indent = 0
+    indent_level = 0
     # The index in `class_lines` that is immediately before the place to which we will add `pipeline_model_mapping`
-    target_idx = None
+    start_idx = None
     # If `pipeline_model_mapping` is found in `test_class`.
     def_line = None
     for idx, line in enumerate(class_lines):
         if line.strip().startswith("all_model_classes = "):
-            target_indent = len(line) - len(line.lstrip())
-            target_idx = idx
+            indent_level = len(line) - len(line.lstrip())
+            start_idx = idx
         elif line.strip().startswith("all_generative_model_classes = "):
-            target_indent = len(line) - len(line.lstrip())
-            target_idx = idx
+            indent_level = len(line) - len(line.lstrip())
+            start_idx = idx
         elif line.strip().startswith("pipeline_model_mapping = "):
-            target_indent = len(line) - len(line.lstrip())
-            target_idx = idx - 1
+            indent_level = len(line) - len(line.lstrip())
+            start_idx = idx
             def_line = line
+            break
 
-    if target_idx is None:
+    if start_idx is None:
         return "", -1
+    end_idx = find_block_ending(class_lines, start_idx, indent_level)
 
-    # Remove existing `pipeline_model_mapping`
-    if def_line is not None:
+    if def_line is None:
+        target_idx = end_idx
+    else:
+        target_idx = start_idx - 1
+
+        # Remove existing `pipeline_model_mapping`
         # `target_idx + 1` is the index for the line defining `target_idx + 1`
-        for idx, line in enumerate(class_lines[target_idx + 1 :]):
-            indent = len(line) - len(line.lstrip())
-            if idx == 0 or indent > target_indent or (indent == target_indent and line.strip() == ")"):
-                # These lines are going to be removed before writing to the test file.
-                class_lines[target_idx + 1 + idx] = None
-            elif idx > 0 and indent <= target_indent:
-                # Outside the definition block of `pipeline_model_mapping`
-                break
+        for idx in range(start_idx, end_idx + 1):
+            # These lines are going to be removed before writing to the test file.
+            class_lines[idx] = None
 
     # Add indentation
-    line_to_add = " " * target_indent + line_to_add
+    line_to_add = " " * indent_level + line_to_add
     # Insert `pipeline_model_mapping` to `class_lines`
     # (The line at `target_idx` should be kept by definition!)
     class_lines = class_lines[: target_idx + 1] + [line_to_add] + class_lines[target_idx + 1 :]
