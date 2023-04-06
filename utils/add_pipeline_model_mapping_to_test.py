@@ -62,7 +62,7 @@ def get_framework(test_class):
 def get_mapping_for_task(task, framework):
     """Get mappings defined in `XXXPipelineTests` for the task `task`."""
     # Use the cached results
-    if PIPELINE_TEST_MAPPING[task][framework] is not None:
+    if PIPELINE_TEST_MAPPING[task].get(framework, None) is not None:
         return PIPELINE_TEST_MAPPING[task][framework]
 
     pipeline_test_class = pipeline_test_mapping[task]["test"]
