@@ -221,7 +221,8 @@ def add_pipeline_model_mapping(test_class, overwrite=False):
         return "", -1
     end_idx = find_block_ending(class_lines, start_idx, indent_level)
 
-    # extract `is_xxx_available()` from existing blocks
+    # Extract `is_xxx_available()` from existing blocks: some models require specific libraries like `timm` and use
+    # `is_timm_available()` instead of `is_torch_available()`.
     # Keep leading and trailing whitespaces
     r = re.compile(r"\s(is_\S+?_available\(\))\s")
     backend_condition = None
