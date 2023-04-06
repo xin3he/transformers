@@ -29,6 +29,7 @@ import argparse
 import glob
 import inspect
 import os
+import re
 import sys
 import unittest
 
@@ -220,14 +221,16 @@ def add_pipeline_model_mapping(test_class, overwrite=False):
         return "", -1
     end_idx = find_block_ending(class_lines, start_idx, indent_level)
 
-    import re
-    # extract `is_xxx_available()`
-    r = re.compile(r" (is_\S+?_available\(\)) ")
-    backend = None
+    # extract `is_xxx_available()` from existing blocks
+    # Keep leading and trailing whitespaces
+    r = re.compile(r"\s(is_\S+?_available\(\))\s")
+    backend_condition = None
     for line in class_lines[start_idx:end_idx + 1]:
-        backend = r.search(line)
-        if backend is not None:
-            r.sub(backend[0], line_to_add)
+        backend_condition = r.search(line)
+        if backend_condition is not None:
+            # replace the leading and trailing whitespaces to the space character " ".
+            target = " " + backend_condition[0][1:-1] + " "
+            line_to_add = r.sub(target, line_to_add)
             break
 
     if def_line is None:
