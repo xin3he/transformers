@@ -220,6 +220,16 @@ def add_pipeline_model_mapping(test_class, overwrite=False):
         return "", -1
     end_idx = find_block_ending(class_lines, start_idx, indent_level)
 
+    import re
+    # extract `is_xxx_available()`
+    r = re.compile(r" (is_\S+?_available\(\)) ")
+    backend = None
+    for line in class_lines[start_idx:end_idx + 1]:
+        backend = r.search(line)
+        if backend is not None:
+            r.sub(backend[0], line_to_add)
+            break
+
     if def_line is None:
         target_idx = end_idx
     else:
