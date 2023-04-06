@@ -3,7 +3,7 @@ name: Check Tiny Models
 on:
   push:
     branches:
-      - check_tiny_models*
+      - run_hotfix
   repository_dispatch:
   schedule:
     - cron: "0 2 * * *"

@@ -425,7 +425,7 @@ install_requires = [
 
 setup(
     name="transformers",
-    version="4.28.0.dev0",  # expected format is one of x.y.z.dev0, or x.y.z.rc1 or x.y.z (no to dashes, yes to dots)
+    version="4.28.0.dev1",  # expected format is one of x.y.z.dev0, or x.y.z.rc1 or x.y.z (no to dashes, yes to dots)
     extras_require=extras,
     install_requires=install_requires,
     cmdclass={"deps_table_update": DepsTableUpdateCommand},
