@@ -46,6 +46,12 @@ for task, _ in pipeline_test_mapping.items():
     PIPELINE_TEST_MAPPING[task] = {"pt": None, "tf": None}
 
 
+# DO **NOT** add item to this set (unless the reason is approved)
+TEST_FILE_TO_IGNORE = {
+    "tests/models/esm/test_modeling_esmfold.py",  # The pipeline test mapping is added to `test_modeling_esm.py`
+}
+
+
 def get_framework(test_class):
     """Infer the framework from the test class `test_class`."""
 
@@ -226,7 +232,7 @@ def add_pipeline_model_mapping(test_class, overwrite=False):
     # Keep leading and trailing whitespaces
     r = re.compile(r"\s(is_\S+?_available\(\))\s")
     backend_condition = None
-    for line in class_lines[start_idx:end_idx + 1]:
+    for line in class_lines[start_idx : end_idx + 1]:
         backend_condition = r.search(line)
         if backend_condition is not None:
             # replace the leading and trailing whitespaces to the space character " ".
@@ -305,4 +311,7 @@ if __name__ == "__main__":
                 test_files.append(test_file)
 
     for test_file in test_files:
+        if test_file in TEST_FILE_TO_IGNORE:
+            print(f"[SKIPPED] {test_file} is skipped as it is in `TEST_FILE_TO_IGNORE` in the file {__file__}.")
+            continue
         add_pipeline_model_mapping_to_test_file(test_file, overwrite=args.overwrite)
