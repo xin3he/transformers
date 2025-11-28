@@ -341,6 +341,7 @@ class DeepseekV3DecoderLayer(LlamaDecoderLayer):
 
 class DeepseekV3PreTrainedModel(LlamaPreTrainedModel):
     _can_compile_fullgraph = False
+    _keep_in_fp32_modules = ["e_score_correction_bias"]
 
     def _init_weights(self, module):
         PreTrainedModel._init_weights(self, module)

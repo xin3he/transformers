@@ -512,6 +512,7 @@ class DeepseekV3PreTrainedModel(PreTrainedModel):
         "hidden_states": DeepseekV3DecoderLayer,
         "attentions": DeepseekV3Attention,
     }
+    _keep_in_fp32_modules_strict = ["e_score_correction_bias"]
 
     def _init_weights(self, module):
         super()._init_weights(module)

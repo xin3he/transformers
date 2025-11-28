@@ -2114,6 +2114,8 @@ class PreTrainedModel(nn.Module, EmbeddingAccessMixin, ModuleUtilsMixin, PushToH
         # Make sure the modules correctly exist if the flag is active
         if self._keep_in_fp32_modules is not None or self._keep_in_fp32_modules_strict is not None:
             all_parameters = {name for name, _ in self.named_parameters() if len(name) > 0}
+            all_param_buffers = {name for name, _ in self.named_buffers() if len(name) > 0}
+            all_parameters.update(all_param_buffers)
             unique_module_names = set()
             # Get all unique module names in the module graph, without the prefixes
             for param in all_parameters:
